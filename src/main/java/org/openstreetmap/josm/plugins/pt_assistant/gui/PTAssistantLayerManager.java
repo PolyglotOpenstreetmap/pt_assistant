@@ -11,6 +11,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.gui.dialogs.relation.GenericRelationEditor;
 import org.openstreetmap.josm.plugins.pt_assistant.PTAssistantPlugin;
+import org.openstreetmap.josm.plugins.pt_assistant.PTAssistantPluginPreferences;
 import org.openstreetmap.josm.plugins.pt_assistant.utils.RouteUtils;
 
 /**
@@ -34,19 +35,47 @@ public class PTAssistantLayerManager
     }
 
     /**
+     * @return true if the layer exists and the user has set it to invisible
+     */
+    private boolean isLayerHidden() {
+        return layer != null && !layer.isVisible();
+    }
+
+    /**
+     * Whether the highlight layer shows this relation: public transport routes
+     * always, foot, bicycle and horse routes only if the user left that option on.
+     *
+     * @param relation the relation
+     * @return true if it should be highlighted
+     */
+    static boolean isHighlightable(Relation relation) {
+        if (relation == null) {
+            return false;
+        }
+        if (RouteUtils.isVersionTwoPTRoute(relation)) {
+            return true;
+        }
+        return PTAssistantPluginPreferences.HIGHLIGHT_NON_PT_ROUTES.get()
+                && (RouteUtils.isBicycleRoute(relation)
+                    || RouteUtils.isFootRoute(relation)
+                    || RouteUtils.isHorseRoute(relation));
+    }
+
+    /**
      * Listens to a selection change
      */
     @Override
     public void selectionChanged(SelectionChangeEvent event) {
 
+        if (isLayerHidden()) {
+            return;
+        }
+
         ArrayList<OsmPrimitive> routes = new ArrayList<>();
 
         for (OsmPrimitive primitive : event.getSelection()) {
             if (primitive.getType().equals(OsmPrimitiveType.RELATION)
-                    && (RouteUtils.isVersionTwoPTRoute((Relation) primitive)
-                        || RouteUtils.isBicycleRoute((Relation) primitive)
-                        || RouteUtils.isFootRoute((Relation) primitive)
-                        || RouteUtils.isHorseRoute((Relation) primitive))) {
+                    && isHighlightable((Relation) primitive)) {
                 routes.add(primitive);
             }
         }
@@ -74,10 +103,7 @@ public class PTAssistantLayerManager
             GenericRelationEditor editor = (GenericRelationEditor) evt.getNewValue();
             Relation relation = editor.getRelation();
 
-            if (RouteUtils.isVersionTwoPTRoute(relation)
-                    || RouteUtils.isBicycleRoute(relation)
-                    || RouteUtils.isFootRoute(relation)
-                    || RouteUtils.isHorseRoute(relation)) {
+            if (!isLayerHidden() && isHighlightable(relation)) {
                 getLayer().repaint(relation);
             }
         }

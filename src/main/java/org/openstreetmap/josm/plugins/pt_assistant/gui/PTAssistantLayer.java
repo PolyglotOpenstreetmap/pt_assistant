@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -41,7 +42,7 @@ import org.openstreetmap.josm.tools.ImageProvider;
  */
 public final class PTAssistantLayer extends Layer implements LayerChangeListener {
 
-    private List<OsmPrimitive> primitives = new ArrayList<>();
+    private final List<OsmPrimitive> primitives = new CopyOnWriteArrayList<>();
     private PTAssistantPaintVisitor paintVisitor;
     private final HashMap<Character, List<PTWay>> fixVariants = new HashMap<>();
     private final HashMap<Way, List<Character>> wayColoring = new HashMap<>();
@@ -113,11 +114,16 @@ public final class PTAssistantLayer extends Layer implements LayerChangeListener
     }
 
     public void setPrimitives(List<OsmPrimitive> newPrimitives) {
-        primitives = new ArrayList<>(newPrimitives);
+        List<OsmPrimitive> copy = new ArrayList<>(newPrimitives);
+        primitives.clear();
+        primitives.addAll(copy);
     }
 
     @Override
     public void paint(final Graphics2D g, final MapView mv, Bounds bounds) {
+        if (!isVisible()) {
+            return;
+        }
 
         paintVisitor = new PTAssistantPaintVisitor(g, mv);
 
@@ -179,25 +185,22 @@ public final class PTAssistantLayer extends Layer implements LayerChangeListener
      *            relation
      */
     public void repaint(Relation relation) {
+        if (!isVisible()) {
+            // A hidden layer must neither draw nor spend time on the route
+            return;
+        }
         primitives.clear();
         primitives.add(relation);
         if (!MainApplication.getLayerManager().containsLayer(this)) {
             MainApplication.getLayerManager().addLayer(this);
         }
-
-        if (paintVisitor == null) {
-            MapView mv = MainApplication.getMap().mapView;
-            paintVisitor = new PTAssistantPaintVisitor(mv.getGraphics(), mv);
-        }
-
-        for (OsmPrimitive primitive : primitives) {
-            paintVisitor.visit(primitive);
-        }
-
-        paintVisitor.visitFixVariants(fixVariants, wayColoring);
-
-        MainApplication.getMap().mapView.repaint();
         setModeOfTravel(relation);
+
+        // Let JOSM repaint through paint(); drawing straight onto the map view's
+        // graphics here left stale highlights that ignored the layer's visibility.
+        if (MainApplication.isDisplayingMapView()) {
+            MainApplication.getMap().mapView.repaint();
+        }
     }
 
     private void setModeOfTravel(Relation relation) {

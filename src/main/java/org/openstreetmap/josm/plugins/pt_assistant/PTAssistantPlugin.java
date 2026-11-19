@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JMenu;
 
@@ -61,7 +62,7 @@ public class PTAssistantPlugin extends Plugin {
     private static PTRouteSegment lastFix;
 
     /** list of relation currently highlighted by the layer */
-    private static List<Relation> highlightedRelations = new ArrayList<>();
+    private static final List<Relation> highlightedRelations = new CopyOnWriteArrayList<>();
 
     /**
      * Main constructor.
