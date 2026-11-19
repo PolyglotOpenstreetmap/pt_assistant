@@ -81,7 +81,10 @@ public class PublicTransportLayer extends Layer {
 
             Color color = Color.GREEN;
             try {
-                color = ColorHelper.html2color(relation.get("colour"));
+                final String colour = relation.get("colour");
+                if (colour != null) {
+                    color = ColorHelper.html2color(colour);
+                }
             } catch (RuntimeException ignore) {
                 Logging.trace(ignore);
             }
