@@ -79,21 +79,34 @@ public class PublicTransportLayer extends Layer {
                 }
             }
 
-            Color color = Color.GREEN;
-            try {
-                final String colour = relation.get("colour");
-                if (colour != null) {
-                    color = ColorHelper.html2color(colour);
-                }
-            } catch (RuntimeException ignore) {
-                Logging.trace(ignore);
-            }
+            final Color color = routeColor(relation);
             renderer.drawWay(way, color, new BasicStroke(1), null, null, 0, doDrawArrows, false, false, false);
         }
 
         if (doDrawRefLabels) {
             drawRefLabels(renderer, segmentRefs);
         }
+    }
+
+    /**
+     * The colour a route is drawn in: its {@code colour} tag, or green if it has none or it cannot be read.
+     * @param relation the route
+     * @return the colour
+     */
+    static Color routeColor(Relation relation) {
+        final String colour = relation.get("colour");
+        if (colour != null) {
+            try {
+                // html2color returns null for a colour it cannot read
+                final Color parsed = ColorHelper.html2color(colour);
+                if (parsed != null) {
+                    return parsed;
+                }
+            } catch (RuntimeException ignore) {
+                Logging.trace(ignore);
+            }
+        }
+        return Color.GREEN;
     }
 
     protected void drawRefLabels(StyledMapRenderer renderer, MultiMap<Pair<Node, Node>, String> segmentRefs) {
