@@ -842,15 +842,15 @@ public class SortPTRouteMembersAction extends AbstractRelationEditorAction {
 
                 final Optional<Node> firstNode = WayUtils.findFirstCommonNode(curr, prev);
                 final Optional<Node> lastNode = WayUtils.findFirstCommonNode(curr, next);
-                Logging.info(String.valueOf(i));
+                Logging.debug(String.valueOf(i));
                 if (firstNode.isPresent() && firstNode.get().equals(curr.getNode(0))) {
-                    Logging.info("Front Way 1 == " + curr.getName());
+                    Logging.debug("Front Way 1 == " + curr.getName());
                 } else if (firstNode.isPresent() && firstNode.get().equals(curr.getNode(curr.getNodesCount() - 1))) {
-                    Logging.info("Back Way 2 == " + curr.getName());
+                    Logging.debug("Back Way 2 == " + curr.getName());
                 } else if (lastNode.isPresent() && lastNode.get().equals(curr.getNode(0))) {
-                    Logging.info("Back Way 3 == " + curr.getName());
+                    Logging.debug("Back Way 3 == " + curr.getName());
                 } else if (lastNode.isPresent() && lastNode.get().equals(curr.getNode(curr.getNodesCount() - 1))) {
-                    Logging.info("Front Way 4 == " + curr.getName());
+                    Logging.debug("Front Way 4 == " + curr.getName());
                 }
             }
         }

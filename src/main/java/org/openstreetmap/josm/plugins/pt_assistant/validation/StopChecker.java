@@ -91,7 +91,7 @@ public class StopChecker extends Checker {
 
                 // Create a list of assigned route relations
                 for (Relation referrer : Utils.filteredCollection(member.getReferrers(), Relation.class)) {
-                    if (referrer.get("type") == "route") {
+                    if (referrer.hasTag("type", "route")) {
                         stopPositionRelationIds.put(referrer.getId(), referrer.getId());
                     }
                 }
@@ -100,7 +100,7 @@ public class StopChecker extends Checker {
 
                 // Create a list of assigned route relations
                 for (Relation referrer : Utils.filteredCollection(member.getReferrers(), Relation.class)) {
-                    if (referrer.get("type") == "route") {
+                    if (referrer.hasTag("type", "route")) {
                         platformRelationIds.put(referrer.getId(), referrer.getId());
                     }
                 }

@@ -33,6 +33,7 @@ public class PTAssistantPluginPreferences extends DefaultTabPreferenceSetting {
     private final JCheckBox modeOfTransportToStop;
     private final JCheckBox splitWay1;
     private final JCheckBox splitWay2;
+    private final JCheckBox highlightNonPtRoutes;
     public static final BooleanProperty TRANSFER_DETAILS = new BooleanProperty("pt_assistant.transfer-details-action", false);
     public static final BooleanProperty NUMERICAL_OPTIONS = new BooleanProperty("pt_assistant.keep-options-numerical-in-mend-action", false);
     public static final BooleanProperty COMPARE_FROM_TAG = new BooleanProperty("pt_assistant.compare-name-from-tag", false);
@@ -40,6 +41,7 @@ public class PTAssistantPluginPreferences extends DefaultTabPreferenceSetting {
     public static final BooleanProperty CHECK_START_END = new BooleanProperty("pt_assistant.check-route-relation-start-end", false);
     public static final BooleanProperty ADD_MODE_OF_TRANSPORT = new BooleanProperty("pt_assistant.add-mode-of-transport-to-stop", false);
     public static final BooleanProperty SPLITWAY_1 = new BooleanProperty("pt_assistant.split-way-1", true);
+    public static final BooleanProperty HIGHLIGHT_NON_PT_ROUTES = new BooleanProperty("pt_assistant.highlight-non-pt-routes", true);
     public static final BooleanProperty SPLITWAY_2 = new BooleanProperty("pt_assistant.split-way-2", false);
 
     public PTAssistantPluginPreferences() {
@@ -61,6 +63,7 @@ public class PTAssistantPluginPreferences extends DefaultTabPreferenceSetting {
         modeOfTransportToStop = new JCheckBox(tr("Don’t add public_transport=platform and mode of transport to node representing the stop (suffice with highway=bus_stop or railway=tram_stop)"));
         splitWay1 = new JCheckBox(tr("Add public_transport=stop_position + mode of transport on these nodes"));
         splitWay2 = new JCheckBox(tr("Always split ways, even if they are not at the end of the itinerary"));
+        highlightNonPtRoutes = new JCheckBox(tr("Also highlight foot, bicycle and horse routes"));
         // CHECKSTYLE.ON: LineLength
     }
 
@@ -97,6 +100,10 @@ public class PTAssistantPluginPreferences extends DefaultTabPreferenceSetting {
                 GBC.eol().fill(GBC.HORIZONTAL));
         mainPanel.add(splitWay1);
         mainPanel.add(splitWay2);
+        mainPanel.add(new JLabel("<html><br></html>"), GBC.eol().fill(GBC.HORIZONTAL));
+
+        mainPanel.add(new JLabel("<html><b>"+tr("Route highlighting :")+"</b></html>"), GBC.eol().fill(GBC.HORIZONTAL));
+        mainPanel.add(highlightNonPtRoutes);
 
         createPreferenceTabWithScrollPane(gui, mainPanel);
     }
@@ -120,6 +127,7 @@ public class PTAssistantPluginPreferences extends DefaultTabPreferenceSetting {
         ADD_MODE_OF_TRANSPORT.put(this.modeOfTransportToStop.isSelected());
         SPLITWAY_1.put(this.splitWay1.isSelected());
         SPLITWAY_2.put(this.splitWay2.isSelected());
+        HIGHLIGHT_NON_PT_ROUTES.put(this.highlightNonPtRoutes.isSelected());
 
         return false;
     }
@@ -150,6 +158,8 @@ public class PTAssistantPluginPreferences extends DefaultTabPreferenceSetting {
         splitWay1.setSelected(SPLITWAY_1.get());
 
         splitWay2.setSelected(SPLITWAY_2.get());
+
+        highlightNonPtRoutes.setSelected(HIGHLIGHT_NON_PT_ROUTES.get());
     }
 
     @Override

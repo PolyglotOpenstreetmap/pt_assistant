@@ -99,7 +99,7 @@ public class DistanceBetweenStops extends JosmAction {
             sb.insert(0, '\n')
                 .insert(0, route.getDisplayName(DefaultNameFormatter.getInstance()))
                 .insert(0, '\t')
-                .insert(0, SystemOfMeasurement.getSystemOfMeasurement().getDistText(totalLength / lengthN, new DecimalFormat("0"), -1));
+                .insert(0, SystemOfMeasurement.getSystemOfMeasurement().getDistText(lengthN == 0 ? Double.NaN : totalLength / lengthN, new DecimalFormat("0"), -1));
         } finally {
             Config.getPref().putBoolean("system_of_measurement.use_only_lower_unit", onlyLowerUnit);
         }
